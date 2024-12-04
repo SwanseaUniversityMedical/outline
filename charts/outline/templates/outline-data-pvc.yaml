@@ -1,0 +1,41 @@
+{{- if .Values.outline.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: outline-data
+  namespace: {{ .Release.Namespace }}
+
+  annotations:
+    outline.ukserp.ac.uk/component: "outline-data"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.outline.persistence.persistentVolumeClaim.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  labels:
+    component: outline-data
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    chart: {{ include "outline.labels.chart" . }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.outline.persistence.persistentVolumeClaim.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+  volumeMode: Filesystem
+
+  storageClassName: {{ .Values.outline.persistence.storageClassName }}
+
+  resources:
+    requests:
+      storage: {{ .Values.outline.persistence.capacity }}
+
+  accessModes:
+    - ReadWriteOnce
+{{- end }}

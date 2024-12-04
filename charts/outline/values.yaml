@@ -1,0 +1,123 @@
+
+# Global annotations and labels applied to all manifests
+annotations: {}
+labels: {}
+
+outline:
+
+  replicas: 1
+
+  # Annotations and labels specific to the deployment
+  annotations: {}
+  labels: {}
+  # Annotations and labels specific to the pod
+  podAnnotations: {}
+  podLabels: {}
+
+  # Override the outline container image
+  image:
+    repository: "outlinewiki/outline"
+    tag: "0.81.1"
+
+  # Port exposed by the outline container
+  port: 3000
+
+  # Resource limits for the pods
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  # Health probes for the pods
+  probes:
+    readiness:
+      enabled: true
+      path: "/"
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    liveness:
+      enabled: true
+      path: "/"
+      initialDelaySeconds: 30
+      periodSeconds: 10
+
+  # Allow additional env vars from literals, configmaps, and secrets
+  env: []
+  envFrom: []
+
+  storage:
+    # Pick one or the other
+    filesystem:
+      enabled: false
+    s3:
+      enabled: false
+      bucket:
+      bucketUrl:
+      forcePathStyle: false
+
+  persistence:
+    # Create and mount a pvc for the /data directory
+    enabled: true
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: standard
+    capacity: 1Gi
+
+    # Annotations and labels specific to the pv
+    persistentVolume:
+      annotations: {}
+      labels: {}
+
+    # Annotations and labels specific to the pvc
+    persistentVolumeClaim:
+      annotations: {}
+      labels: {}
+
+  # Allow additional volume mounts to be injected into the pod
+  extraVolumeMounts: []
+  extraVolumes: []
+
+  # Force the pod onto or away from certain nodes
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+service:
+  # Port exposed by the service
+  port: 8080
+  # Annotations specific to the service
+  annotations: {}
+  # Labels specific to the service
+  labels: {}
+
+ingress:
+  # Create an ingress to connect to the outline pods via the service
+  enabled: true
+  # Annotations and labels specific to the ingress
+  annotations: {}
+  labels: {}
+  # Ingress controller
+  ingressClassName: "nginx"
+  # URL for the ingress to listen on
+  host: "outline.example.com"
+  # Configure the ingress to use tls
+  tls:
+    enabled: false
+    secretName: outline-tls-secret
+
+networkPolicy:
+  # Create a NetworkPolicy which only allows the outline pods to be contacted via the ingress
+  enabled: true
+  # Annotations and labels specific to the network policy
+  annotations: {}
+  labels: {}
+
+  ingress:
+    # Pod labels to match the ingress controller pods already running on the cluster
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+
+# A list of strings that will be templated and then exported as individual manifests
+extraManifests: []

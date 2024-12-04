@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outline
+  namespace: {{ .Release.Namespace }}
+
+  annotations:
+    outline.ukserp.ac.uk/component: "outline"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.outline.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  labels:
+    component: outline
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    chart: {{ include "outline.labels.chart" . }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.outline.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+
+  replicas: {{ .Values.outline.replicas }}
+
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      component: outline
+
+  template:
+    metadata:
+      labels:
+        component: outline
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+        {{- with .Values.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.outline.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      annotations:
+        outline.ukserp.ac.uk/component: "outline"
+        {{- with .Values.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.outline.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+    spec:
+      initContainers:
+      - name: outline-db-migrate
+        command: ["yarn", "db:migrate", "--env=production-ssl-disabled"]
+        image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
+
+        {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
+
+      containers:
+      - name: outline
+        image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
+
+        ports:
+        - containerPort: {{ .Values.outline.port }}
+
+        {{- if .Values.outline.probes.readiness.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.outline.probes.readiness.path }}
+            port: {{ .Values.outline.port }}
+          initialDelaySeconds: {{ .Values.outline.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.outline.probes.readiness.periodSeconds }}
+        {{- end }}
+
+        {{- if .Values.outline.probes.liveness.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.outline.probes.liveness.path }}
+            port: {{ .Values.outline.port }}
+          initialDelaySeconds: {{ .Values.outline.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.outline.probes.liveness.periodSeconds }}
+        {{- end }}
+
+        {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | indent 8 }}
+
+      volumes:
+        {{- if .Values.outline.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: outline-data
+        {{- end }}
+        {{- with .Values.outline.extraVolumes }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+      {{- with .Values.outline.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
+
+      {{- with .Values.outline.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
+
+      {{- with .Values.outline.affinity }}
+      affinity:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
