@@ -1,0 +1,49 @@
+{{- if (and .Values.ingress.enabled .Values.networkPolicy.enabled) }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: outline
+  namespace: {{ .Release.Namespace }}
+
+  annotations:
+    outline.ukserp.ac.uk/component: "outline-networkpolicy"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.networkPolicy.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  labels:
+    component: outline-networkpolicy
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    chart: {{ include "outline.labels.chart" . }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.networkPolicy.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      component: outline
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- with .Values.networkPolicy.ingress.matchLabels }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.service.port }}
+
+  policyTypes:
+    - Ingress
+{{- end }}
