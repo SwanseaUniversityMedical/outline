@@ -126,7 +126,16 @@ extraManifests: []
 keycloakWebhook:
   enabled: false
 
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
   # Override the outline container image
   image:
     repository: ""
     tag: ""
+
+  envFrom: []

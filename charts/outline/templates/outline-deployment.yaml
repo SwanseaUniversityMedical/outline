@@ -63,6 +63,8 @@ spec:
         command: ["yarn", "db:migrate", "--env=production-ssl-disabled"]
         image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
 
+        {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
+
       {{- if .Values.keycloakWebhook.enabled }}
       - name: outline-keycloak-webhook
         restartPolicy: Always
@@ -71,9 +73,18 @@ spec:
 
         ports:
           - containerPort: 8000
+
+        {{- with .Values.outline.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
         {{- end }}
 
-        {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
+        {{- with .Values.keycloakWebhook.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
 
       containers:
       - name: outline
