@@ -130,15 +130,3 @@ keycloak-webhook:
   image:
     repository: ""
     tag: ""
-
-  port: 8000
-
-  service:
-    # Port exposed by the service
-    port: 8000
-    # Annotations specific to the service
-    annotations: { }
-    # Labels specific to the service
-    labels: { }
-
-

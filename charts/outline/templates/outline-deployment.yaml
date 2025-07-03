@@ -69,7 +69,7 @@ spec:
         image: "{{ .Values.keycloak-webhook.image.repository }}:{{ .Values.keycloak-webhook.image.tag }}"
 
         ports:
-          - containerPort: {{ .Values.keycloak-webhook.port }}
+          - containerPort: 8000
 
         {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
 
