@@ -68,13 +68,7 @@ spec:
       {{- if .Values.keycloakWebhook.enabled }}
       - name: outline-keycloak-webhook
         restartPolicy: Always
-        command:
-          - run
-        args:
-          - --allow-net
-          - --allow-env
-          - --allow-read
-          - server.ts
+        command: ["deno run", "--allow-net", "--allow-env", "--allow-read", "server.ts"]
         image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
 
         ports:
