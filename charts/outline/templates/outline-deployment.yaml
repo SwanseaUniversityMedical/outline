@@ -68,7 +68,13 @@ spec:
       {{- if .Values.keycloakWebhook.enabled }}
       - name: outline-keycloak-webhook
         restartPolicy: Always
-        command: ["run", "--allow-net", "--allow-env", "--allow-read", "server.ts"]
+        command:
+          - run
+        args:
+          - --allow-net
+          - --allow-env
+          - --allow-read
+          - server.ts
         image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
 
         ports:
