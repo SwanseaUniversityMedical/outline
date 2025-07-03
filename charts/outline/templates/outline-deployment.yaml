@@ -66,7 +66,7 @@ spec:
       - name: outline-keycloak-webhook
         restartPolicy: Always
         command: ["run", "--allow-net", "--allow-env", "--allow-read", "server.ts"]
-        image: "{{ .Values.keycloak-webhook.image.repository }}:{{ .Values.keycloak-webhook.image.tag }}"
+        image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
 
         ports:
           - containerPort: 8000

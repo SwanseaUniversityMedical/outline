@@ -123,7 +123,7 @@ networkPolicy:
 extraManifests: []
 
 
-keycloak-webhook:
+keycloakWebhook:
   enabled: false
 
   # Override the outline container image
