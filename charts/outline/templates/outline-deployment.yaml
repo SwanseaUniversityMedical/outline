@@ -65,6 +65,27 @@ spec:
 
         {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
 
+      {{- if .Values.keycloakWebhook.enabled }}
+      - name: outline-keycloak-webhook
+        restartPolicy: Always
+        command: ["deno", "run", "--allow-net", "--allow-env", "--allow-read", "server.ts"]
+        image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
+
+        ports:
+          - containerPort: 8000
+
+        {{- with .Values.outline.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        {{- with .Values.keycloakWebhook.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
+
       containers:
       - name: outline
         image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
