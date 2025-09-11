@@ -35,3 +35,15 @@ ingress:
 
 networkPolicy:
   enabled: false
+
+keycloakWebhook:
+  enabled: true
+
+  # Override the outline container image
+  image:
+    repository: "test"
+    tag: "1.0.0"
+
+  envFrom:
+    - secretRef:
+        name: outline-secret-webhooks
