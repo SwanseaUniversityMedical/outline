@@ -40,3 +40,51 @@ spec:
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.outline.port }}
       protocol: TCP
+
+---
+
+{{- if .Values.keycloakWebhook.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: outline-keycloak-webhook
+  namespace: {{ .Release.Namespace }}
+
+  annotations:
+    outline.ukserp.ac.uk/component: "outline-keycloak-webhook-service"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  labels:
+    component: outline-keycloak-webhook-service
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    chart: {{ include "outline.labels.chart" . }}
+    heritage: {{ .Release.Service }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+    component: outline
+    release: {{ .Release.Name }}
+
+  type: ClusterIP
+  sessionAffinity: None
+
+  ports:
+    - name: http
+      port: {{ .Values.keycloakWebhook.service.port }}
+      targetPort: {{ .Values.keycloakWebhook.service.port }}
+      protocol: TCP
+
+{{- end }}
