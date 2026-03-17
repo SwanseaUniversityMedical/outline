@@ -72,7 +72,7 @@ spec:
         restartPolicy: Always
         command: ["deno", "run", "--allow-net", "--allow-env", "--allow-read", "server.ts"]
         image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
-        pullPolicy: "{{ .Values.keycloakWebhook.image.pullPolicy }}"
+        imagePullPolicy: "{{ .Values.keycloakWebhook.image.pullPolicy }}"
 
         ports:
           - containerPort: {{ .Values.keycloakWebhook.service.port }}
