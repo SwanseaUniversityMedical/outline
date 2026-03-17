@@ -17,7 +17,11 @@ env:
   - name: NODE_ENV
     value: "production"
   - name: URL
+  {{- if .Values.ingress.tls.enabled }}
+    value: "https://{{ .Values.ingress.host }}"
+  {{- else }}
     value: "http://{{ .Values.ingress.host }}"
+  {{- end }}
   - name: PORT
     value: {{ .Values.outline.port | quote }}
   - name: FORCE_HTTPS

@@ -17,7 +17,7 @@ outline:
   # Override the outline container image
   image:
     repository: "outlinewiki/outline"
-    tag: "0.81.1"
+    tag: "1.6.0"
 
   # Port exposed by the outline container
   port: 3000
@@ -36,13 +36,19 @@ outline:
     readiness:
       enabled: true
       path: "/"
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
     liveness:
       enabled: true
       path: "/"
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
 
   # Allow additional env vars from literals, configmaps, and secrets
   env: []
@@ -121,3 +127,25 @@ networkPolicy:
 
 # A list of strings that will be templated and then exported as individual manifests
 extraManifests: []
+
+
+keycloakWebhook:
+  enabled: false
+
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  # Override the outline container image
+  image:
+    repository: "harbor.ukserp.ac.uk/outline/outline-keycloak"
+    tag: "3.0.0"
+    pullPolicy: IfNotPresent
+
+  envFrom: []
+
+  service:
+    port: 8000
