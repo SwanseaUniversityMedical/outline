@@ -17,7 +17,7 @@ outline:
   # Override the outline container image
   image:
     repository: "outlinewiki/outline"
-    tag: "0.81.1"
+    tag: "1.6.0"
 
   # Port exposed by the outline container
   port: 3000
@@ -142,7 +142,7 @@ keycloakWebhook:
   # Override the outline container image
   image:
     repository: "harbor.ukserp.ac.uk/outline/outline-keycloak"
-    tag: "1.0.0"
+    tag: "2.0.0"
     pullPolicy: IfNotPresent
 
   envFrom: []
