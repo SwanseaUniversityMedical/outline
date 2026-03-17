@@ -142,7 +142,7 @@ keycloakWebhook:
   # Override the outline container image
   image:
     repository: "harbor.ukserp.ac.uk/outline/outline-keycloak"
-    tag: "2.0.0"
+    tag: "3.0.0"
     pullPolicy: IfNotPresent
 
   envFrom: []
