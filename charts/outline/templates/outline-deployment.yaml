@@ -59,11 +59,13 @@ spec:
 
     spec:
       initContainers:
+      {{- if lt .Values.outline.image.tag "1.2.0" }}
       - name: outline-db-migrate
         command: ["yarn", "db:migrate", "--env=production-ssl-disabled"]
         image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
 
         {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
+      {{- end }}
 
       {{- if .Values.keycloakWebhook.enabled }}
       - name: outline-keycloak-webhook
