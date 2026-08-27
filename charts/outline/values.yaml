@@ -97,6 +97,7 @@ service:
   annotations: {}
   # Labels specific to the service
   labels: {}
+  type: ClusterIP
 
 ingress:
   # Create an ingress to connect to the outline pods via the service
