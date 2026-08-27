@@ -32,7 +32,7 @@ spec:
     component: outline
     release: {{ .Release.Name }}
 
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   sessionAffinity: None
 
   ports:
