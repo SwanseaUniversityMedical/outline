@@ -44,6 +44,16 @@ spec:
             port:
               number: {{ .Values.service.port }}
 
+      {{- if .Values.keycloakWebhook.enabled }}
+      - path: "/webhooks"
+        pathType: Prefix
+        backend:
+          service:
+            name: outline-keycloak-webhook
+            port:
+              number: {{ .Values.keycloakWebhook.service.port }}
+      {{- end }}
+
   {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:

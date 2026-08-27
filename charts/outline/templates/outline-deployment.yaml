@@ -59,11 +59,39 @@ spec:
 
     spec:
       initContainers:
+      {{- if lt .Values.outline.image.tag "1.2.0" }}
       - name: outline-db-migrate
         command: ["yarn", "db:migrate", "--env=production-ssl-disabled"]
         image: "{{ .Values.outline.image.repository }}:{{ .Values.outline.image.tag }}"
 
         {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.keycloakWebhook.enabled }}
+      - name: outline-keycloak-webhook
+        restartPolicy: Always
+        image: "{{ .Values.keycloakWebhook.image.repository }}:{{ .Values.keycloakWebhook.image.tag }}"
+        imagePullPolicy: "{{ .Values.keycloakWebhook.image.pullPolicy }}"
+
+        ports:
+          - containerPort: {{ .Values.keycloakWebhook.service.port }}
+
+        {{- with .Values.outline.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        {{- with .Values.keycloakWebhook.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        {{- with .Values.outline.extraVolumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
 
       containers:
       - name: outline
@@ -79,6 +107,9 @@ spec:
             port: {{ .Values.outline.port }}
           initialDelaySeconds: {{ .Values.outline.probes.readiness.initialDelaySeconds }}
           periodSeconds: {{ .Values.outline.probes.readiness.periodSeconds }}
+          timeoutSeconds: {{ .Values.outline.probes.readiness.timeoutSeconds }}
+          successThreshold: {{ .Values.outline.probes.readiness.successThreshold }}
+          failureThreshold: {{ .Values.outline.probes.readiness.failureThreshold }}
         {{- end }}
 
         {{- if .Values.outline.probes.liveness.enabled }}
@@ -88,6 +119,9 @@ spec:
             port: {{ .Values.outline.port }}
           initialDelaySeconds: {{ .Values.outline.probes.liveness.initialDelaySeconds }}
           periodSeconds: {{ .Values.outline.probes.liveness.periodSeconds }}
+          timeoutSeconds: {{ .Values.outline.probes.liveness.timeoutSeconds }}
+          successThreshold: {{ .Values.outline.probes.liveness.successThreshold }}
+          failureThreshold: {{ .Values.outline.probes.liveness.failureThreshold }}
         {{- end }}
 
         {{- include "outline.container.common" (dict "Release" .Release "Values" .Values) | indent 8 }}
