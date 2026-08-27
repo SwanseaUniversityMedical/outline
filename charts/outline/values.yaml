@@ -17,7 +17,7 @@ outline:
   # Override the outline container image
   image:
     repository: "outlinewiki/outline"
-    tag: "1.6.0"
+    tag: "1.9.2"
 
   # Port exposed by the outline container
   port: 3000
