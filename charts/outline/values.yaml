@@ -90,6 +90,15 @@ outline:
   tolerations: []
   affinity: {}
 
+  # Pod DNS settings. ndots is lowered to 1 so an external FQDN (e.g. the outline
+  # or keycloak endpoint) is tried as-is instead of being expanded against every
+  # cluster search domain first, which multiplies queries and DNS-loss exposure.
+  dnsPolicy: ClusterFirst
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+
 service:
   # Port exposed by the service
   port: 8080
