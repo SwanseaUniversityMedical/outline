@@ -150,3 +150,18 @@ keycloakWebhook:
 
   service:
     port: 8000
+
+  # Dedicated ingress for the webhook receiver, used when the main ingress is
+  # disabled (outline fronted externally, e.g. by HAProxy). Outline requires an
+  # https webhook URL, so this gives the sidecar a TLS front door without exposing
+  # it externally. Ignored when ingress.enabled is true (the webhook is then served
+  # on ingress.host/webhooks as before).
+  ingress:
+    enabled: false
+    annotations: {}
+    labels: {}
+    ingressClassName: "nginx"
+    host: "outline-webhooks.example.com"
+    tls:
+      enabled: true
+      secretName: outline-webhook-tls-secret
